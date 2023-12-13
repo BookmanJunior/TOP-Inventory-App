@@ -3,3 +3,8 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  ul 
+    li Games: #{items.gameCount}
+    li Authors: #{items.authorCount}
+    li Publishers: #{items.publisherCount}
+    li Genres: #{items.genreCount}
