@@ -8,4 +8,4 @@ publisherSchema.virtual("url").get(function () {
   return `/publishers/${this._id}`;
 });
 
-exports.module = mongoose.Model("Publisher", publisherSchema);
+module.exports = mongoose.model("Publisher", publisherSchema);
