@@ -3,11 +3,22 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+const mongoose = require("mongoose");
+const dbURI = process.env.MONGODBURI;
 
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+const gamesRouter = require("./routes/games");
+const authorRouter = require("./routes/authors");
+const publisherRouter = require("./routes/publishers");
+const genreRouter = require("./routes/genres");
 
 var app = express();
+
+main().catch((err) => console.log(err));
+
+async function main() {
+  mongoose.connect(dbURI);
+}
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -20,7 +31,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/games", gamesRouter);
+app.use("/authors", authorRouter);
+app.use("/publishers", publisherRouter);
+app.use("/genres", genreRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
