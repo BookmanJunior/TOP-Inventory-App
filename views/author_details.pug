@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1 #{author.name}
+  if games.length
+    ul.author-games
+      for game in games
+        li
+          a(href=game.url) #{game.title}
+  else
+    h2 No games listed by this author.

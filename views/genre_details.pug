@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1 #{genre.name}
+  if games.length
+    ul.games-by-genre
+      for game in games
+        li
+          a(href=game.url) #{game.title}
+  else
+    h2 No games listed under this genre.

@@ -10,10 +10,11 @@ block content
       hr
       ul.game-details
         li.game-genres Genres: 
-          for genre in game.genres
-            span.game-genre #{genre.name} 
-        li.game-author Author: #{game.author.name}
+          for genre, index in game.genres
+            a(href=genre.url).game-genre #{genre.name} 
+        li.game-author Author: 
+          a(href=game.author.url) #{game.author.name}
         li.game-publishers Publisher: 
           for publisher in game.publisher
-            span.game-publisher #{publisher.name} 
+            a(href=publisher.url).game-publisher #{publisher.name} 
   

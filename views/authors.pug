@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1 Authors
+  hr
+  ul.authors-list
+    for author in authors
+      li.author
+        a(href=author.url) #{author.name}

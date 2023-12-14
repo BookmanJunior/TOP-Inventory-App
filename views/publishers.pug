@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1 Publishers
+  hr
+  ul.publisher-list
+    for publisher in publishers
+      li.publisher
+        a(href=publisher.url) #{publisher.name}
