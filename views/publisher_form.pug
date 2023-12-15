@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1.title #{title}
+  form(method="post")
+    input(type="text", name="publisher_name")
+    button(type="submit") Submit  
+  if (errors) 
+    ul.errors
+      for error in errors
+        li.error-msg #{error.msg}
