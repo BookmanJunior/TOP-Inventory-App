@@ -7,10 +7,19 @@ block content
     input(type="text" name="game_title" id="game_title" required)
     br
     hr
+    label(for="game_description") Game Description:
+    br
+    textarea(name="game_description", cols="30", rows="10" id="game_description" required)
+    br
+    hr
+    label(for="game_price") Game Price: 
+    input(type="number", name="game_price" id="game_price" min=0 step=".01" required)
+    br
+    hr
     label(for="genre") Genre:
     br
     for genre in genres 
-      input(type="checkbox", name=genre.name id=genre.name value=genre._id required)
+      input(type="checkbox", name="genres" id=genre.name value=genre._id)
       label(for=genre.name) #{genre.name}
     hr
     label(for="author") Author: 
@@ -22,7 +31,11 @@ block content
     label(for="publisher") Publisher:
     br
     for publisher in publishers 
-      input(type="checkbox", name=publisher.name id=publisher.name value=publisher._id required)
+      input(type="checkbox", name="publisher" id=publisher.name value=publisher._id)
       label(for=publisher.name) #{publisher.name}
     br
     button(type="submit") Submit
+    if (errors) 
+      for error in errors 
+        ul
+          li #{error.msg}
