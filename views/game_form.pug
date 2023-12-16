@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1 #{title}
+  form(method="post")
+    label(for="game_title") Title: 
+    input(type="text" name="game_title" id="game_title" required)
+    br
+    hr
+    label(for="genre") Genre:
+    br
+    for genre in genres 
+      input(type="checkbox", name=genre.name id=genre.name value=genre._id required)
+      label(for=genre.name) #{genre.name}
+    hr
+    label(for="author") Author: 
+    select(name="author")
+      for author in authors
+        option(value=author._id required) #{author.name}
+    br
+    hr
+    label(for="publisher") Publisher:
+    br
+    for publisher in publishers 
+      input(type="checkbox", name=publisher.name id=publisher.name value=publisher._id required)
+      label(for=publisher.name) #{publisher.name}
+    br
+    button(type="submit") Submit

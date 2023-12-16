@@ -45,3 +45,18 @@ exports.getGame = asyncHandler(async (req, res, next) => {
 
   res.render("game_details", { game });
 });
+
+exports.game_form_get = asyncHandler(async (req, res, next) => {
+  const [genres, authors, publishers] = await Promise.all([
+    Genre.find().sort({ name: 1 }).exec(),
+    Author.find().sort({ name: 1 }).exec(),
+    Publisher.find().sort({ name: 1 }).exec(),
+  ]);
+
+  res.render("game_form", {
+    title: "Create Game",
+    genres,
+    authors,
+    publishers,
+  });
+});
