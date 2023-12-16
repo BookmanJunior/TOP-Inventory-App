@@ -3,6 +3,7 @@ const Game = require("../models/game");
 const Author = require("../models/author");
 const Publisher = require("../models/publisher");
 const Genre = require("../models/genre");
+const { body, validationResult } = require("express-validator");
 
 exports.index = asyncHandler(async (req, res, next) => {
   const [gameCount, authorCount, publisherCount, genreCount] =
@@ -60,3 +61,70 @@ exports.game_form_get = asyncHandler(async (req, res, next) => {
     publishers,
   });
 });
+
+exports.game_form = [
+  asyncHandler(async (req, res, next) => {
+    //make sure genres and publishers is an array
+    if (!Array.isArray(req.body.genres)) {
+      req.body.genres = req.body.genres === undefined ? [] : [req.body.genres];
+    }
+
+    if (!Array.isArray(req.body.publisher)) {
+      req.body.publisher =
+        req.body.publisher === undefined ? [] : [req.body.genres];
+    }
+
+    req.body.game_price = Number.parseFloat(req.body.game_price);
+
+    next();
+  }),
+
+  body("game_title", "Game title can't be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("game_description", "Game Description must be longer than 10 words.")
+    .trim()
+    .isLength({ min: 10 })
+    .escape(),
+  body("game_price", "Game Price can't be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .isDecimal()
+    .withMessage("Game Price must be decimal.")
+    .escape(),
+  body("genres*", "Choose at least one genre.").trim().escape(),
+  body("author", "Please specify author of the game.").trim().escape(),
+  body("publisher*", "Publisher field can't be empty.").trim().escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const error = validationResult(req);
+
+    const game = new Game({
+      title: req.body.game_title,
+      author: req.body.author,
+      publisher: req.body.publisher,
+      genres: req.body.genres,
+      price: req.body.game_price,
+      description: req.body.game_description,
+    });
+
+    if (!error.isEmpty()) {
+      const [genres, authors, publishers] = await Promise.all([
+        Genre.find().sort({ name: 1 }).exec(),
+        Author.find().sort({ name: 1 }).exec(),
+        Publisher.find().sort({ name: 1 }).exec(),
+      ]);
+      res.render("game_form", {
+        errors: error.array(),
+        game,
+        genres,
+        authors,
+        publishers,
+      });
+    } else {
+      await game.save();
+      res.redirect("/games");
+    }
+  }),
+];
