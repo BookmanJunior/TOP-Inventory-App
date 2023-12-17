@@ -148,3 +148,47 @@ exports.game_form = [
     }
   }),
 ];
+
+exports.game_form_edit_get = asyncHandler(async (req, res, next) => {
+  const game = await Game.findById(req.params.id)
+    .populate("genres")
+    .populate("author")
+    .populate("publisher")
+    .exec();
+
+  if (game === null) {
+    const err = new Error("Game not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  const [genres, authors, publishers] = await Promise.all([
+    Genre.find().sort({ name: 1 }).exec(),
+    Author.find().sort({ name: 1 }).exec(),
+    Publisher.find().sort({ name: 1 }).exec(),
+  ]);
+
+  genres.map((genre) =>
+    game.genres.find((selectedGenre) => {
+      if (selectedGenre._id.equals(genre._id)) {
+        genre.checked = true;
+      }
+    })
+  );
+
+  publishers.map((publisher) =>
+    game.publisher.find((selectedPublisher) => {
+      if (selectedPublisher._id.equals(publisher._id)) {
+        publisher.checked = true;
+      }
+    })
+  );
+
+  res.render("game_form", {
+    title: `Edit ${game.title}`,
+    game,
+    genres,
+    authors,
+    publishers,
+  });
+});
