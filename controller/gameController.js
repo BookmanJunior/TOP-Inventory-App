@@ -93,9 +93,15 @@ exports.game_form = [
     .isDecimal()
     .withMessage("Game Price must be decimal.")
     .escape(),
-  body("genres*", "Choose at least one genre.").trim().escape(),
+  body("genres", "Choose at least one genre.")
+    .trim()
+    .isArray({ min: 1 })
+    .escape(),
   body("author", "Please specify author of the game.").trim().escape(),
-  body("publisher*", "Publisher field can't be empty.").trim().escape(),
+  body("publisher", "Choose at least on publisher.")
+    .trim()
+    .isArray({ min: 1 })
+    .escape(),
 
   asyncHandler(async (req, res, next) => {
     const error = validationResult(req);
@@ -115,7 +121,21 @@ exports.game_form = [
         Author.find().sort({ name: 1 }).exec(),
         Publisher.find().sort({ name: 1 }).exec(),
       ]);
+
+      for (const genre of genres) {
+        if (game.genres.includes(genre._id)) {
+          genre.checked = true;
+        }
+      }
+
+      for (const publisher of publishers) {
+        if (game.publisher.includes(publisher._id)) {
+          publisher.checked = true;
+        }
+      }
+
       res.render("game_form", {
+        title: "Create Game",
         errors: error.array(),
         game,
         genres,
