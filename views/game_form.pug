@@ -4,22 +4,22 @@ block content
   h1 #{title}
   form(method="post")
     label(for="game_title") Title: 
-    input(type="text" name="game_title" id="game_title" required)
+    input(type="text" name="game_title" id="game_title" value=(game === undefined ? "" : game.title) required)
     br
     hr
     label(for="game_description") Game Description:
     br
-    textarea(name="game_description", cols="30", rows="10" id="game_description" required)
+    textarea(name="game_description", cols="30", rows="10" id="game_description" required) #{game === undefined ? "" : game.description}
     br
     hr
     label(for="game_price") Game Price: 
-    input(type="number", name="game_price" id="game_price" min=0 step=".01" required)
+    input(type="number", name="game_price" id="game_price" min=0 step=".01" value=(game === undefined ? "" : game.price) required)
     br
     hr
     label(for="genre") Genre:
     br
     for genre in genres 
-      input(type="checkbox", name="genres" id=genre.name value=genre._id)
+      input(type="checkbox", name="genres" id=genre.name value=genre._id checked=genre.checked)
       label(for=genre.name) #{genre.name}
     hr
     label(for="author") Author: 
@@ -31,7 +31,7 @@ block content
     label(for="publisher") Publisher:
     br
     for publisher in publishers 
-      input(type="checkbox", name="publisher" id=publisher.name value=publisher._id)
+      input(type="checkbox", name="publisher" id=publisher.name value=publisher._id checked=publisher.checked)
       label(for=publisher.name) #{publisher.name}
     br
     button(type="submit") Submit
