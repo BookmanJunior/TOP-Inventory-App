@@ -55,3 +55,42 @@ exports.author_create = [
     }
   }),
 ];
+
+exports.author_update_get = asyncHandler(async (req, res, next) => {
+  const author = await Author.findById(req.params.id).exec();
+
+  if (author === null) {
+    const error = new Error("Author Not Found");
+    error.status = 404;
+    return next(error);
+  }
+
+  res.render("author_form", { title: "Update Author", author });
+});
+
+exports.author_update_post = [
+  body("author_name", "Author name can't be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const error = validationResult(req);
+
+    const author = new Author({
+      name: req.body.author_name,
+      _id: req.params.id,
+    });
+
+    if (!error.isEmpty()) {
+      res.render("author_form", {
+        title: "Update Author",
+        author,
+        errors: error.array(),
+      });
+    } else {
+      await Author.findByIdAndUpdate(req.params.id, author, {});
+      res.redirect(author.url);
+    }
+  }),
+];

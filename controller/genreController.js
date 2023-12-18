@@ -55,3 +55,42 @@ exports.genre_create = [
     }
   }),
 ];
+
+exports.genre_update_get = asyncHandler(async (req, res, next) => {
+  const genre = await Genre.findById(req.params.id).exec();
+
+  if (genre === null) {
+    const error = new Error("Genre not found.");
+    error.status = 404;
+    return next(error);
+  }
+
+  res.render("genre_form", { title: "Update Genre", genre });
+});
+
+exports.genre_update_post = [
+  body("genre_name", "Genre field can't be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const error = validationResult(req);
+
+    const genre = new Genre({
+      name: req.body.genre_name,
+      _id: req.params.id,
+    });
+
+    if (!error.isEmpty()) {
+      res.render("genre_form", {
+        title: "Update Genre",
+        genre,
+        errors: error.array(),
+      });
+    } else {
+      await Genre.findByIdAndUpdate(req.params.id, genre, {});
+      res.redirect(genre.url);
+    }
+  }),
+];

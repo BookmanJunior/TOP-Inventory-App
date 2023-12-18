@@ -10,4 +10,8 @@ router.get("/publisher/create", publisherController.publisher_create_get);
 
 router.post("/publisher/create", publisherController.publisher_create);
 
+router.get("/:id/update", publisherController.publisher_update_get);
+
+router.post("/:id/update", publisherController.publisher_update_post);
+
 module.exports = router;

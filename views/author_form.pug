@@ -3,7 +3,8 @@ extends layout
 block content
   h1.title #{title}
   form(method="post")
-    input(type="text", name="author_name")
+    label(for="author_name") Author:  
+    input(type="text", name="author_name" id="author_name" value=(author === undefined ? "" : author.name) required)
     button(type="submit") Submit  
   if (errors) 
     ul.errors

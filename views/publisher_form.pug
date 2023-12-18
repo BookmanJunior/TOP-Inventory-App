@@ -3,7 +3,8 @@ extends layout
 block content
   h1.title #{title}
   form(method="post")
-    input(type="text", name="publisher_name")
+    label(for="publisher_name") Publisher:  
+    input(type="text", name="publisher_name" id="publisher_name" value=(publisher === undefined ? "" : publisher.name))
     button(type="submit") Submit  
   if (errors) 
     ul.errors

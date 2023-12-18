@@ -58,3 +58,42 @@ exports.publisher_create = [
     }
   }),
 ];
+
+exports.publisher_update_get = asyncHandler(async (req, res, next) => {
+  const publisher = await Publisher.findById(req.params.id).exec();
+
+  if (publisher === null) {
+    const error = new Error("Publisher not found.");
+    error.status = 404;
+    return next(error);
+  }
+
+  res.render("publisher_form", { title: "Update Publisher", publisher });
+});
+
+exports.publisher_update_post = [
+  body("publisher_name", "Publisher name can't be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const error = validationResult(req);
+
+    const publisher = new Publisher({
+      name: req.body.publisher_name,
+      _id: req.params.id,
+    });
+
+    if (!error.isEmpty()) {
+      res.render("publisher_form", {
+        title: "Update Publisher",
+        publisher,
+        errors: error.array(),
+      });
+    } else {
+      await Publisher.findByIdAndUpdate(req.params.id, publisher, {});
+      res.redirect(publisher.url);
+    }
+  }),
+];
