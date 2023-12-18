@@ -149,7 +149,7 @@ exports.game_form = [
   }),
 ];
 
-exports.game_form_edit_get = asyncHandler(async (req, res, next) => {
+exports.game_update_get = asyncHandler(async (req, res, next) => {
   const game = await Game.findById(req.params.id)
     .populate("genres")
     .populate("author")
@@ -192,3 +192,91 @@ exports.game_form_edit_get = asyncHandler(async (req, res, next) => {
     publishers,
   });
 });
+
+exports.game_update_post = [
+  asyncHandler(async (req, res, next) => {
+    //make sure genres and publishers is an array
+    if (!Array.isArray(req.body.genres)) {
+      req.body.genres = req.body.genres === undefined ? [] : [req.body.genres];
+    }
+
+    if (!Array.isArray(req.body.publisher)) {
+      req.body.publisher =
+        req.body.publisher === undefined ? [] : [req.body.genres];
+    }
+
+    req.body.game_price = Number.parseFloat(req.body.game_price);
+
+    next();
+  }),
+
+  body("game_title", "Game title can't be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("game_description", "Game Description must be longer than 10 words.")
+    .trim()
+    .isLength({ min: 10 })
+    .escape(),
+  body("game_price", "Game Price can't be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .isDecimal()
+    .withMessage("Game Price must be decimal.")
+    .escape(),
+  body("genres", "Choose at least one genre.")
+    .trim()
+    .isArray({ min: 1 })
+    .escape(),
+  body("author", "Please specify author of the game.").trim().escape(),
+  body("publisher", "Choose at least on publisher.")
+    .trim()
+    .isArray({ min: 1 })
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const error = validationResult(req);
+
+    const game = new Game({
+      title: req.body.game_title,
+      author: req.body.author,
+      publisher: req.body.publisher,
+      genres: req.body.genres,
+      price: req.body.game_price,
+      description: req.body.game_description,
+      _id: req.params.id, //required or a new id will be assigned
+    });
+
+    if (!error.isEmpty()) {
+      const [genres, authors, publishers] = await Promise.all([
+        Genre.find().sort({ name: 1 }).exec(),
+        Author.find().sort({ name: 1 }).exec(),
+        Publisher.find().sort({ name: 1 }).exec(),
+      ]);
+
+      for (const genre of genres) {
+        if (game.genres.includes(genre._id)) {
+          genre.checked = true;
+        }
+      }
+
+      for (const publisher of publishers) {
+        if (game.publisher.includes(publisher._id)) {
+          publisher.checked = true;
+        }
+      }
+
+      res.render("game_form", {
+        title: "Create Game",
+        errors: error.array(),
+        game,
+        genres,
+        authors,
+        publishers,
+      });
+    } else {
+      await Game.findByIdAndUpdate(req.params.id, game);
+      res.redirect(game.url);
+    }
+  }),
+];

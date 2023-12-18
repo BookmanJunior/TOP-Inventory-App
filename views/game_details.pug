@@ -17,4 +17,6 @@ block content
         li.game-publishers Publisher: 
           for publisher in game.publisher
             a(href=publisher.url).game-publisher #{publisher.name} 
-  
+    hr
+    br
+    a(href=game.url+"/update") Update Game 
