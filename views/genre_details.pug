@@ -9,5 +9,12 @@ block content
           a(href=game.url) #{game.title}
   else
     h2 No games listed under this genre.
-
+  hr
+  br
+  p
+    form(action=genre.url+"/delete", method="post") 
+      input(type="hidden", name="genre_id" value=genre._id)
+      button(type="submit") Delete Genre
+  if error
+    p #{error}
   a(href=genre.url+"/update") Update Genre 

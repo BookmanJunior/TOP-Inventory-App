@@ -9,4 +9,12 @@ block content
           a(href=game.url) #{game.title}
   else
     h2 No games listed by this publisher.
+  hr
+  br
+  p
+    form(action=publisher.url+"/delete", method="post") 
+      input(type="hidden", name="publisher_id" value=publisher._id)
+      button(type="submit") Delete Publisher
+  if error
+    p #{error}
   a(href=publisher.url+"/update") Update Publisher

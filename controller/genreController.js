@@ -49,8 +49,8 @@ exports.genre_create = [
       if (genreExists) {
         res.redirect(genreExists.url);
       } else {
-        await author.save();
-        res.redirect("/authors");
+        await genre.save();
+        res.redirect("/genres");
       }
     }
   }),
@@ -94,3 +94,22 @@ exports.genre_update_post = [
     }
   }),
 ];
+
+exports.genre_delete_post = asyncHandler(async (req, res, next) => {
+  const [games, genre] = await Promise.all([
+    Game.find({ genres: req.params.id }).sort({ title: 1 }).exec(),
+    Genre.findById(req.params.id).exec(),
+  ]);
+
+  if (games.length) {
+    res.render("genre_details", {
+      games,
+      genre,
+      error:
+        "Delete games associated with the genre before removing this genre.",
+    });
+  } else {
+    await genre.deleteOne();
+    res.redirect("/genres");
+  }
+});

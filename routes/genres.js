@@ -14,4 +14,6 @@ router.get("/:id/update", genreController.genre_update_get);
 
 router.post("/:id/update", genreController.genre_update_post);
 
+router.post("/:id/delete", genreController.genre_delete_post);
+
 module.exports = router;

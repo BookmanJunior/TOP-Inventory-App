@@ -14,4 +14,6 @@ router.get("/:id/update", publisherController.publisher_update_get);
 
 router.post("/:id/update", publisherController.publisher_update_post);
 
+router.post("/:id/delete", publisherController.publisher_delete_post);
+
 module.exports = router;

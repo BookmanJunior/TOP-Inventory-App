@@ -19,4 +19,8 @@ block content
             a(href=publisher.url).game-publisher #{publisher.name} 
     hr
     br
+    p
+      form(method="post" action=game.url+"/delete")
+        input(type="hidden", name="game_id" value=game._id) 
+        button(type="submit") Delete Game
     a(href=game.url+"/update") Update Game 

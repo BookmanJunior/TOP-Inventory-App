@@ -94,3 +94,22 @@ exports.author_update_post = [
     }
   }),
 ];
+
+exports.author_delete_post = asyncHandler(async (req, res, next) => {
+  const [games, author] = await Promise.all([
+    Game.find({ author: req.params.id }).sort({ title: 1 }).exec(),
+    Author.findById(req.params.id).exec(),
+  ]);
+
+  if (games.length) {
+    res.render("author_details", {
+      games,
+      author,
+      error:
+        "Delete games associated with the author before removing this author.",
+    });
+  } else {
+    await author.deleteOne();
+    res.redirect("/authors");
+  }
+});

@@ -62,7 +62,7 @@ exports.game_form_get = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.game_form = [
+exports.game_form_post = [
   asyncHandler(async (req, res, next) => {
     //make sure genres and publishers is an array
     if (!Array.isArray(req.body.genres)) {
@@ -71,7 +71,7 @@ exports.game_form = [
 
     if (!Array.isArray(req.body.publisher)) {
       req.body.publisher =
-        req.body.publisher === undefined ? [] : [req.body.genres];
+        req.body.publisher === undefined ? [] : [req.body.publisher];
     }
 
     req.body.game_price = Number.parseFloat(req.body.game_price);
@@ -143,6 +143,7 @@ exports.game_form = [
         publishers,
       });
     } else {
+      console.log(game);
       await game.save();
       res.redirect("/games");
     }
@@ -280,3 +281,14 @@ exports.game_update_post = [
     }
   }),
 ];
+
+exports.game_delete_post = asyncHandler(async (req, res, next) => {
+  const game = await Game.findById(req.params.id).exec();
+
+  if (game === null) {
+    res.redirect("/games");
+  } else {
+    await game.deleteOne();
+    res.redirect("/games");
+  }
+});

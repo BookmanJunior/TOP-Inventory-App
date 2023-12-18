@@ -12,7 +12,7 @@ exports.get_publishers = asyncHandler(async (req, res, next) => {
 exports.get_publishers_games = asyncHandler(async (req, res, next) => {
   const [publisher, games] = await Promise.all([
     Publisher.findById(req.params.id).exec(),
-    Game.find({ publisher: req.params.id }).sort({ name: 1 }).exec(),
+    Game.find({ publisher: req.params.id }).sort({ title: 1 }).exec(),
   ]);
 
   res.render("publisher_details", { publisher, games });
@@ -52,8 +52,8 @@ exports.publisher_create = [
       if (publisherExists) {
         res.redirect(publisherExists.url);
       } else {
-        await author.save();
-        res.redirect("/authors");
+        await publisher.save();
+        res.redirect("/publishers");
       }
     }
   }),
@@ -97,3 +97,22 @@ exports.publisher_update_post = [
     }
   }),
 ];
+
+exports.publisher_delete_post = asyncHandler(async (req, res, next) => {
+  const [games, publisher] = await Promise.all([
+    Game.find({ publisher: req.params.id }).sort({ title: 1 }).exec(),
+    Publisher.findById(req.params.id).exec(),
+  ]);
+
+  if (games.length) {
+    res.render("publisher_details", {
+      games,
+      publisher,
+      error:
+        "Delete games associated with the publisher before removing this publisher.",
+    });
+  } else {
+    await publisher.deleteOne();
+    res.redirect("/publishers");
+  }
+});
