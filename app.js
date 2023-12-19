@@ -3,6 +3,9 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+const compression = require("compression");
+const helmet = require("helmet");
+const RateLimit = require("express-rate-limit");
 const mongoose = require("mongoose");
 const dbURI = process.env.MONGODBURI;
 
@@ -11,6 +14,11 @@ const gamesRouter = require("./routes/games");
 const authorRouter = require("./routes/authors");
 const publisherRouter = require("./routes/publishers");
 const genreRouter = require("./routes/genres");
+
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 20,
+});
 
 var app = express();
 
@@ -29,6 +37,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(compression());
+app.use(helmet());
+app.use(limiter);
 
 app.use("/", indexRouter);
 app.use("/games", gamesRouter);
